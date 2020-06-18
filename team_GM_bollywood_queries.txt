@@ -1,0 +1,51 @@
+-- -----------------------------------------------------
+-- View Query_actorInMovies
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS query_actorinmovies;  
+CREATE VIEW Query_actorInMovies
+AS SELECT movies.Movie_Title, `actor details`.`Actor Name`
+FROM movies
+       JOIN movies_actor ON movies.MovieIDNumber = movies_actor.MovieIDNumber
+       JOIN `actor details` ON `actor details`.ActorIDNumber = movies_actor.ActorIDNumber
+WHERE `actor details`.`Actor Name` = 'Govinda';
+
+-- -----------------------------------------------------
+-- View Query_actorMovieCount
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS query_actormoviecount;  
+CREATE VIEW Query_actorMovieCount
+AS SELECT `Actor Name`, MAX(`Actor Movie Count`)
+FROM `actor details`;
+
+-- -----------------------------------------------------
+-- View Query_directorAndProduction
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS query_directorandproduction;  
+CREATE VIEW Query_directorAndProduction
+AS SELECT `director details`.`Director Name`, production.`Production Company Name`
+FROM `director details`
+       JOIN movie_director ON `director details`.DirectorIDNumber = movie_director.DirectorIDNumber
+       JOIN production ON production.MovieIDNumber = movie_director.MovieIDNumber
+GROUP BY `director details`.`Director Name`;
+
+-- -----------------------------------------------------
+-- View Query_topProduction_companies
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS query_topproduction_companies;  
+CREATE VIEW Query_topProduction_Companies
+AS SELECT `Production Company Name`, movies.Movie_Title
+FROM production 
+		JOIN movies ON movies.MovieIDNumber = production.MovieIDNumber
+ WHERE production.MovieIDNumber IN (SELECT movies.MovieIDNumber 
+									FROM movies
+									WHERE `hit/flop` > 3);
+
+-- -----------------------------------------------------
+-- View Query_totalEarnings
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS query_totalearnings; 
+CREATE VIEW Query_totalEarnings
+AS SELECT movies.Release_Date_Year, SUM(`box office earings`.BoxOffice_Earing_In_Theaters) AS 'All Movie Earnings'
+FROM `box office earings`
+       LEFT JOIN movies ON movies.MovieIDNumber = `box office earings`.MovieIDNumber
+WHERE movies.Release_Date_Year = 2001;
